@@ -1,0 +1,13 @@
+# Core dependencies
+pyserial>=3.5
+zerorpc>=0.6.3
+msgpack>=1.0.0
+pyzmq>=25.0.0
+
+# CLI interface
+fire>=0.5.0
+
+# Optional (uncomment if needed)
+# jupyter
+# matplotlib
+# ipywidgets

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pykidev"
+version = "0.1.0"
+description = "Lightweight Python driver and ZeroRPC interface for Arduino-based laboratory instrumentation (SMILE)"
+authors = [
+    { name = "Kamen Kamenov" }
+]
+readme = "README.md"
+requires-python = ">=3.8"
+
+dependencies = [
+    "pyserial>=3.5",
+    "zerorpc>=0.6.3",
+    "fire>=0.5.0",
+    "msgpack>=1.0.0",
+    "pyzmq>=25.0.0"
+]
+
+[project.optional-dependencies]
+client = [
+    "jupyter",
+    "matplotlib",
+    "ipywidgets"
+]
+
+[project.scripts]
+smile = "smile:start_server"
+
+[tool.setuptools.packages.find]
+where = ["."]
