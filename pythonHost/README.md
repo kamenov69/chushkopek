@@ -58,7 +58,7 @@ pip install jupyter matplotlib ipywidgets
 ```python
 from pykidev import PykiDev
 
-ard = PykiDev('/dev/ttyACM0', baudrate=9600)
+ard = PykiDev('/dev/ttyACM0', baudrate=115200)
 print(ard.hello())
 ```
 
@@ -69,13 +69,13 @@ print(ard.hello())
 Start server:
 
 ```bash
-smile --n=0 --baudrate=9600 --bind_port=2020
+smile --n=0 --baudrate=115200 --bind_port=2020
 ```
 
 Or:
 
 ```bash
-python smile.py --n=0 --baudrate=9600 --bind_port=2020
+python smile.py --n=0 --baudrate=115200 --bind_port=2020
 ```
 
 ---
@@ -95,23 +95,17 @@ This design allows seamless transition from local scripts to distributed laborat
 - Python ≥ 3.8  
 - Arduino device running a compatible command interpreter (e.g. CmdArduino)
 
----
-
-## License 
-MIT Copyright (c) 2026 Institute of Solid State Physics, Bulgarian Academy of Sciences
 
 ---
 ## Hardware tested
 
 The firmware has been tested on:
 
-- Arduino Mega 2560 (ATmega2560)
 - NUCLEO-L010RB (STM32L010RB)
 
-Both platforms operate reliably at baud rates from 9600 to 115200 under Linux. Under Windows, however, the Arduino Mega 2560 board used in this project was observed to work reliably only at 9600 and approximately 57600 baud, while higher baud rates resulted in corrupted or unstable serial communication for reasons that are not yet fully understood.
+Both platforms operate reliably at baud rates from 9600 to
 
 ---
-
 ## Notes
 
 This project is designed for small-scale experimental setups where simplicity, flexibility, and rapid development are more important than heavy infrastructure.
