@@ -7,15 +7,18 @@
 //Define Variables we'll be connecting to
 float Setpoint1, Input1, Output1;
 float Setpoint0, Input0, Output0;
-//Specify the links and initial tuning parameters
-// Pid poqlnik nagrewatel
-//k = 100 edenici ot 1023 / 13C oscilirane na
-//period 15c  
-// Kp = 100/13 *0.6
-// Ki = /
-float Kp= 1.96;
-float Ki= Kp/7.5;
-float Kd= Kp*Ki*2/3;
+
+
+// On/Off experimetn with the solder airon heatter  
+// Tu = 15c
+// tmax-tmin = 13C a = 13/2 =6.5C
+// (bmin - bmax)/2   = 100%-0% = 50%  max heating 100 unists form 1023  Pudsed = 10% Pallowed 
+// Kcritical = 4*a/(3.1425 *b) = 9.79 creytical ampl. coeficent 
+
+// Very conservativ settings
+float Kp= 1.96;       // Kp = 0.2 Kcritical =  1.96
+float Ki= Kp/7.5;     // ti = Tu/2 = 7.5     Ki = Kp/ti = 0.26 
+float Kd= Kp*Ki*2/3;  // td = Tu/3 = 2/3*ti  Kd = Kp*td = 9.79 
 
 
 PID PID1(&Input1, &Output1, &Setpoint1, Kp, Ki, Kd, 0);
