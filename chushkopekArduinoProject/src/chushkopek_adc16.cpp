@@ -15,43 +15,51 @@ ADS1115 adc(ADS1115_DEFAULT_ADDRESS);
 void print_buffer(float *buf, size_t max_index){
     Stream  *s = cmdGetStream();
     for(size_t i=0; i<max_index; i++){
-        s->print(buf[i/2],4);
+        s->print(buf[i],4);
         if(i != max_index -1)s->print(", ");
     }
     s->println();
 }
 
 
-void _adc_task(void){
-static int recent_channel = 0;
-    
-    if(!adc.pollConversion(775)) return; // 31  mS/sample Wait for conversion to complete
-                                          // 40 uS for a transaction
-                                          // 775 tries = 1 transaction time 
+static const uint8_t muxes[] = {
+    ADS1115_MUX_P0_NG,
+    ADS1115_MUX_P1_NG,
+    ADS1115_MUX_P2_NG,
+    ADS1115_MUX_P3_NG
+};
 
-    float val = adc.getMilliVolts();
-    switch(recent_channel){
-        case 0:
-            buffer0.add(val);
-            adc.setMultiplexer(ADS1115_MUX_P1_NG);
-            break;
-        
-        case 1:
-            buffer1.add(val);
-            adc.setMultiplexer(ADS1115_MUX_P2_NG);
-            break;
-        
-        case 2:
-            buffer2.add(val);
-            adc.setMultiplexer(ADS1115_MUX_P3_NG);
-            break;
-        
-        case 3:
-            buffer3.add(val);
-            adc.setMultiplexer(ADS1115_MUX_P0_NG);
-            break;
-            
+void _adc_task()
+{
+    static uint8_t channel = 0;
+
+    // Проверка без блокиращо чакане
+    if (!adc.isConversionReady()) {
+        return;
     }
+
+    float value = adc.getMilliVolts();
+
+    switch (channel) {
+        case 0: buffer0.add(value); break;
+        case 1: buffer1.add(value); break;
+        case 2: buffer2.add(value); break;
+        case 3: buffer3.add(value); break;
+    }
+
+    channel = (channel + 1) % 4;
+
+    // Настройване на следващия канал
+    adc.setMultiplexer(muxes[channel]);
+
+    // Стартиране на следващата конверсия
+    adc.triggerConversion();
+
+    if( buffer0.is_full() && buffer1.is_full() ){
+        globals.set("crdy",1.0);
+        mode = 0;
+    }
+
 
     if( !digitalRead(BUTTON)  && globals.get("crdy")) {
         mode =1;
@@ -60,20 +68,10 @@ static int recent_channel = 0;
         globals.set("crdy",0.0);
     }
 
-    adc.triggerConversion();
-
-    if(++recent_channel > 3) recent_channel =0;
-
-    if( buffer0.is_full() && buffer1.is_full() ){
-        globals.set("crdy",1.0);
-        mode = 0;
-    }
-
-
-    
 }
 
-Ticker adc_timer(_adc_task,ADC_PERIOD, 0, MILLIS); //ADC_PERIOD
+
+Ticker adc_timer(_adc_task,1, 0, MILLIS); //every mS  ADC_PERIOD
 
 void setup_adc16(){
     //Wire.setClock();

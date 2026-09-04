@@ -37,7 +37,7 @@ bat-1689mV     150.63   * 11.1929
 
 #define GAIN ADS1115_PGA_1P024 
 //#define GAIN ADS1115_PGA_2P048 
-#define ADC_PERIOD 1000/32       // 4 chan. 8 times in 1S every =  32 ADC readings
+//#define ADC_PERIOD 1000/32       // 4 chan. 8 times in 1S every =  32 ADC readings
 
 void setup_adc16();
 void loop_adc16();
