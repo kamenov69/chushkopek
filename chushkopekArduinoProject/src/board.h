@@ -13,6 +13,7 @@
 #define LED  LED_BUILTIN //D13
 #define BUTTON  PC13
 #define alertReadyPin  D14
+#define buzzer_pin  D7
 #define pwm0_pin  D6
 #define pwm1_pin  D5
 

@@ -14,6 +14,7 @@
 #include "pt_termo.h"
 #include "pwm_chushkopek.h"
 #include "termo_controll.h"
+#include "buzzer.h"
 
 void setup() {
   setup_board();
@@ -23,7 +24,7 @@ void setup() {
   setup_pwm_pins();
   
   setup_termo_controll();
-  
+  setup_buzzer();
 
   setup_var_list_cmd(); // must be last!
 }
@@ -34,5 +35,6 @@ void loop() {
   loop_pt_termo();
   loop_pwm_pins(); 
   loop_termo_controll();
+  loop_buzzer();
 
 }

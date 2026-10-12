@@ -4,6 +4,7 @@
 #include "Cmd.h"
 #include "Ticker.h"
 #include "globalVars.h" 
+//#include "buzzer.h"
 
 Buffer<float, 64> buffer0(false);// 8 times in second x 8 seconds -  not cyclick   
 Buffer<float, 64> buffer1(false);// 
@@ -28,6 +29,27 @@ static const uint8_t muxes[] = {
     ADS1115_MUX_P2_NG,
     ADS1115_MUX_P3_NG
 };
+
+void _button_task(){
+        static int button_state = 0;
+        if(digitalRead(BUTTON)){
+            button_state++;
+            if( button_state > 1000) button_state = 1000;
+        }else{
+            if(button_state > 300){
+                 mode =1;
+                 buffer0.clear();
+                 buffer1.clear();
+                 globals.set("crdy",0.0);
+            }
+            button_state = 0;
+        }
+            
+    
+    }
+
+
+
 
 void _adc_task()
 {
@@ -59,15 +81,8 @@ void _adc_task()
         globals.set("crdy",1.0);
         mode = 0;
     }
-
-
-    if( !digitalRead(BUTTON)  && globals.get("crdy")) {
-        mode =1;
-        buffer0.clear();
-        buffer1.clear();
-        globals.set("crdy",0.0);
-    }
-
+    _button_task();
+   
 }
 
 
