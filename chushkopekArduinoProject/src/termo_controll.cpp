@@ -16,9 +16,15 @@ float Setpoint0, Input0, Output0;
 // Kcritical = 4*a/(3.1425 *b) = 9.79 creytical ampl. coeficent 
 
 // Very conservativ settings
-float Kp= 1.96;       // Kp = 0.2 Kcritical =  1.96
-float Ki= Kp/7.5;     // ti = Tu/2 = 7.5     Ki = Kp/ti = 0.26 
-float Kd= Kp*Ki*2/3;  // td = Tu/3 = 2/3*ti  Kd = Kp*td = 9.79 
+//float Kp= 1.96;       // Kp = 0.2 Kcritical =  1.96
+//float Ki= Kp/7.5;     // ti = Tu/2 = 7.5     Ki = Kp/ti = 0.26 
+//float Kd= Kp*Ki*2/3;  // td = Tu/3 = 2/3*ti  Kd = Kp*td = 9.79 
+// 1.96, 0.26, 9.80  werni
+
+float Kp =  PID_KP_INIT;                        
+float Ki =  PID_KI_INIT;              
+float Kd =  PID_KD_INIT;
+
 
 
 PID PID1(&Input1, &Output1, &Setpoint1, Kp, Ki, Kd, 0);
@@ -44,19 +50,20 @@ void setup_termo_controll(){
   Input1 = globals.get("t1");
   Input1 = globals.get("t0");
   
-  PID0.SetOutputLimits(0.0, 100.0);
-  PID1.SetOutputLimits(0.0, 100.0);
+  PID0.SetOutputLimits(PWM_MIN_VALUE, PWM_MAX_VALUE);
+  PID1.SetOutputLimits(PWM_MIN_VALUE, PWM_MAX_VALUE);
   PID0.SetSampleTime(1000);
   PID1.SetSampleTime(1000);
-  Setpoint0 = 100;
-  Setpoint1 = 100;
+  Setpoint0 = 10;
+  Setpoint1 = 10;
  
-  add_new_global_var("sp0", 100, 0, 370);
-  add_new_global_var("sp1", 100, 0, 370);
+  add_new_global_var("sp0", 10, 0, 370);
+  add_new_global_var("sp1", 10, 0, 370);
   add_new_global_var("kp", Kp, 0.01, 1000);
   add_new_global_var("tau", Kp/Ki, 0.05, 600.0);
-  add_new_global_var("pid0m", 0, 0.0, 1.0);
-  add_new_global_var("pid1m", 0, 0.0, 1.0);
+  add_new_global_var("pidm", 0, 0.0, 1.0);
+  //add_new_global_var("pid0m", 0, 0.0, 1.0);
+  //add_new_global_var("pid1m", 0, 0.0, 1.0);
 
    //turn the PID off
   PID0.SetMode(MANUAL);
@@ -96,17 +103,25 @@ void update_param(void){
       update_pid();
     }
 
-    if(globals.isUpdated("pid0m")){
-      if(globals.get("pid0m") == 0) {PID0.SetMode(MANUAL); globals.set("pwm0", 0);}
-      else PID0.SetMode(AUTOMATIC);
-      globals.clearUpdated("pid0m");
+    if(globals.isUpdated("pidm")){
+      if(globals.get("pidm") == 0) {
+        PID0.SetMode(MANUAL); 
+        globals.set("pwm0", 0);
+        PID1.SetMode(MANUAL); 
+        globals.set("pwm1", 0);
+      }
+      else{ 
+        PID0.SetMode(AUTOMATIC);
+        PID1.SetMode(AUTOMATIC);
+      }
+      globals.clearUpdated("pidm");
     }
 
-    if(globals.isUpdated("pid1m")){
-      if(globals.get("pid1m") == 0){ PID1.SetMode(MANUAL); globals.set("pwm1", 0);} 
-      else PID1.SetMode(AUTOMATIC);
-      globals.clearUpdated("pid1m");
-    }
+    //if(globals.isUpdated("pid1m")){
+    // if(globals.get("pid1m") == 0){ PID1.SetMode(MANUAL); globals.set("pwm1", 0);} 
+    // else PID1.SetMode(AUTOMATIC);
+    // globals.clearUpdated("pid1m");
+    //}
 
 
 }
@@ -117,8 +132,19 @@ void loop_termo_controll(){
   Input1 = globals.get("t1");
   PID0.Compute();
   PID1.Compute();
-  if(PID0.GetMode()) globals.set("pwm0", Output0 );
-  if(PID1.GetMode()) globals.set("pwm1", Output1 );
+  if(PID0.GetMode() || PID1.GetMode()) {
+    globals.set("pwm0", Output0 );
+    globals.set("pwm1", Output1 );
+  }else{
+       if( Input0 < Setpoint0) globals.set("pwm0", PWM_MAX_VALUE);
+       else globals.set("pwm0", PWM_MIN_VALUE);
+       if( Input1 < Setpoint1) globals.set("pwm1", PWM_MAX_VALUE);
+       else globals.set("pwm1", PWM_MIN_VALUE);   
+  }
+  //if(PID1.GetMode()) {
+  //  globals.set("pwm0", Output0 );
+  //  globals.set("pwm1", Output1 );
+  // }
 }
 
 
