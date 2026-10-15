@@ -1,0 +1,6 @@
+# One command per line. Blank lines and # comments are ignored.
+# Uncomment and adjust commands for your firmware before use.
+# Connected Protecta firmware uses pidm (not pid1m).
+# pidm 0
+# sp1 150
+# pidm 1

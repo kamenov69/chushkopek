@@ -28,7 +28,10 @@ client = [
 ]
 
 [project.scripts]
-smile = "smile:start_server"
+smile = "pykidev.server:main"
+
+[project.gui-scripts]
+smile-gui = "pykidev.gui:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
