@@ -41,13 +41,17 @@ float Rpt50_to_real_toC(float v_pt50_mv, float r0 ){
 
 
 void _temperature_task(void){
-    float temperature =  Rpt50_to_real_toC(adc_get_buffer3(), R0);
-    globals.set("t1", temperature);
+    float temperature1 =  Rpt50_to_real_toC(adc_get_buffer3(), R0);
+    float temperature0 =  Rpt50_to_real_toC(adc_get_buffer2(), R0);
+    globals.set("t1", temperature1);   
+    globals.set("t0", temperature0);
+
 }
 
 Ticker tmr_tmperature(_temperature_task, 1000,0, MILLIS);
 
 void setup_pt_termo(void){
+    add_new_global_var("t0", 1, 0, 0);
     add_new_global_var("t1", 1, 0, 0);
     tmr_tmperature.start();
 }

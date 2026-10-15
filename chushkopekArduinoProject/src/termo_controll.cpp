@@ -26,7 +26,6 @@ float Ki =  PID_KI_INIT;
 float Kd =  PID_KD_INIT;
 
 
-
 PID PID1(&Input1, &Output1, &Setpoint1, Kp, Ki, Kd, 0);
 PID PID0(&Input0, &Output0, &Setpoint0, Kp, Ki, Kd, 0);
 void update_pid(){
@@ -47,8 +46,8 @@ void update_pid(){
 
 void setup_termo_controll(){
   //initialize the variables we're linked to
+  Input0 = globals.get("t0");
   Input1 = globals.get("t1");
-  Input1 = globals.get("t0");
   
   PID0.SetOutputLimits(PWM_MIN_VALUE, PWM_MAX_VALUE);
   PID1.SetOutputLimits(PWM_MIN_VALUE, PWM_MAX_VALUE);

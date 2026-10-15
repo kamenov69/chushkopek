@@ -36,8 +36,8 @@ void loop_pwm_pins(void){
     
     if(globals.isUpdated("pwm1")){
         globals.clearUpdated("pwm1");
-        unsigned int int_valuse = (unsigned int)(globals.get("pwm1"));
-        analogWrite(pwm0_pin, int_valuse);
+        unsigned int int_value = (unsigned int)(globals.get("pwm1"));
+        analogWrite(pwm1_pin, int_value);
     }
 }
 
