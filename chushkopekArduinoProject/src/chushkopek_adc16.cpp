@@ -36,14 +36,16 @@ void _button_task(){
             button_state++;
             if( button_state > 1000) button_state = 1000;
         }else{
-            if(button_state > 300){
+            if(button_state > 990){
                  mode =1;
                  buffer0.clear();
                  buffer1.clear();
                  globals.set("crdy",0.0);
+                 
+                }
+              button_state = 0;   
             }
-            button_state = 0;
-        }
+           
             
     
     }
@@ -54,6 +56,8 @@ void _button_task(){
 void _adc_task()
 {
     static uint8_t channel = 0;
+
+    _button_task();
 
     // Проверка без блокиращо чакане
     if (!adc.isConversionReady()) {
@@ -81,8 +85,7 @@ void _adc_task()
         globals.set("crdy",1.0);
         mode = 0;
     }
-    _button_task();
-   
+    
 }
 
 
