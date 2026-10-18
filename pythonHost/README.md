@@ -87,17 +87,40 @@ Tkinter must be available in that environment (included in standard Windows
 Python installations; Conda provides the `tk` package). After installation,
 `smile-gui` also opens the window.
 
+### Standalone Linux executable
+
+Build on Linux using the environment containing the project's dependencies:
+
+```bash
+conda activate myenv
+python -m pip install pyinstaller
+python build_linux.py
+```
+
+Open `dist/Chushkopek` from the file manager, or run `./dist/Chushkopek`.
+The executable includes Python and its application dependencies, so Conda does
+not need to be activated to run it. Keep the editable `setup.ini` beside it in
+a writable folder. The build copies your current configuration on the first
+build and preserves an existing `dist/setup.ini` on subsequent builds.
+Build again after changing the source. This build targets Linux on the build
+machine's architecture; compatibility with other distributions needs testing.
+
+The executable also supports `--server list`, `--server start`, `--server stop`,
+and `--client --connect tcp://127.0.0.1:2020 --command hello` for terminal use.
+
+### Using the window
+
 Choose a serial port (`/dev/ttyACM0` on Linux, e.g. `COM3` on Windows), baud
-rate, bind address/port. Click **Стартирай** to connect,
-check `hello`, run commands from `setup.ini`, and serve. **Спри** requests a graceful shutdown via
+rate, bind address/port. Click **Start** to connect,
+check `hello`, run commands from `setup.ini`, and serve. **Stop** requests a graceful shutdown via
 ZeroRPC on both platforms. Closing the window also stops its server; during
 startup it waits for initialization to finish first. The log displays errors
 and device responses. The window stays responsive while the server runs in a
 separate process.
 
-The **Команди** tab sends commands through ZeroRPC and displays their responses
+The **Commands** tab sends commands through ZeroRPC and displays their responses
 and errors in a history pane. Enter `hello`, `sp1 150`, or `a 2 3.5`, then
-press Enter or **Изпрати**. The client calls `client.command(name, *arguments)`;
+press Enter or **Send**. The client calls `client.command(name, *arguments)`;
 arguments must be numbers and are converted to integers/floats. Sending clears
 the input field. Use Up/Down to recall sent commands; Down past the newest
 command restores the draft you were typing. History lasts for the current window.

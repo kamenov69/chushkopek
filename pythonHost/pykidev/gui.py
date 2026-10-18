@@ -28,38 +28,38 @@ class ServerWindow:
         except (OSError, ValueError) as error:
             messagebox.showerror("setup.ini", str(error))
             self.settings = Settings()
-        root.title("Чушкопек — ZeroRPC сървър")
+        root.title("Chushkopek")
         root.geometry("820x540")
         root.protocol("WM_DELETE_WINDOW", self.close)
         self.tabs = ttk.Notebook(root)
         self.tabs.pack(fill="both", expand=True)
         frame = ttk.Frame(self.tabs, padding=12)
-        self.tabs.add(frame, text="Сървър")
+        self.tabs.add(frame, text="Server")
         frame.columnconfigure(1, weight=1)
         self.port = tk.StringVar()
         self.baud = tk.StringVar(value=str(self.settings.baudrate))
         self.host = tk.StringVar(value=self.settings.host)
         self.rpc_port = tk.StringVar(value=str(self.settings.tcp_port))
-        self.status = tk.StringVar(value="Спрян")
+        self.status = tk.StringVar(value="Stopped")
         self.inputs = []
-        ttk.Label(frame, text="Сериен порт").grid(row=0, column=0, sticky="w")
+        ttk.Label(frame, text="Serial port").grid(row=0, column=0, sticky="w")
         self.ports = ttk.Combobox(frame, textvariable=self.port, state="readonly")
         self.ports.grid(row=0, column=1, sticky="ew", padx=8, pady=4)
-        self.refresh_button = ttk.Button(frame, text="Обнови", command=self.refresh)
+        self.refresh_button = ttk.Button(frame, text="Refresh", command=self.refresh)
         self.refresh_button.grid(row=0, column=2)
         self.inputs.extend([self.ports, self.refresh_button])
-        self.entry(frame, 1, "Скорост (baud)", self.baud)
-        ttk.Label(frame, text="Начална конфигурация").grid(row=2, column=0, sticky="w")
+        self.entry(frame, 1, "Baud rate", self.baud)
+        ttk.Label(frame, text="Config").grid(row=2, column=0, sticky="w")
         ttk.Label(frame, text=str(SETUP_PATH), wraplength=480).grid(row=2, column=1, columnspan=2, sticky="w", padx=8, pady=4)
-        self.entry(frame, 3, "Адрес на сървъра", self.host)
-        self.entry(frame, 4, "TCP порт", self.rpc_port)
-        ttk.Label(frame, text="127.0.0.1: само този компютър; 0.0.0.0: достъп от мрежата").grid(
+        self.entry(frame, 3, "Server address", self.host)
+        self.entry(frame, 4, "TCP port", self.rpc_port)
+        ttk.Label(frame, text="127.0.0.1: local only · 0.0.0.0: network access").grid(
             row=5, column=0, columnspan=3, sticky="w", pady=6)
         buttons = ttk.Frame(frame)
         buttons.grid(row=6, column=0, columnspan=3, sticky="ew", pady=8)
-        self.start_button = ttk.Button(buttons, text="Стартирай", command=self.start)
+        self.start_button = ttk.Button(buttons, text="Start", command=self.start)
         self.start_button.pack(side="left")
-        self.stop_button = ttk.Button(buttons, text="Спри", command=self.stop, state="disabled")
+        self.stop_button = ttk.Button(buttons, text="Stop", command=self.stop, state="disabled")
         self.stop_button.pack(side="left", padx=8)
         ttk.Label(buttons, textvariable=self.status).pack(side="left", padx=12)
         self.log = ScrolledText(frame, state="disabled", height=16, wrap="word")
@@ -71,7 +71,7 @@ class ServerWindow:
 
     def build_console(self):
         frame = ttk.Frame(self.tabs, padding=12)
-        self.tabs.add(frame, text="Команди")
+        self.tabs.add(frame, text="Commands")
         frame.columnconfigure(1, weight=1)
         frame.rowconfigure(4, weight=1)
         self.client_endpoint = tk.StringVar(value=self.settings.connect_endpoint)
@@ -80,18 +80,18 @@ class ServerWindow:
         self.history_index = 0
         self.command_draft = ""
         self.command_busy = False
-        ttk.Label(frame, text="Адрес на сървъра").grid(row=0, column=0, sticky="w")
+        ttk.Label(frame, text="Server address").grid(row=0, column=0, sticky="w")
         ttk.Entry(frame, textvariable=self.client_endpoint).grid(row=0, column=1, columnspan=2, sticky="ew", padx=8, pady=4)
-        ttk.Label(frame, text='Примери: hello    t1    sp1 150    a 2 3.5    |    ↑/↓ история').grid(row=1, column=0, columnspan=3, sticky="w", pady=8)
-        ttk.Label(frame, text="Команда").grid(row=2, column=0, sticky="w")
+        ttk.Label(frame, text='Examples: hello · t1 · sp1 150 · a 2 3.5    |    ↑/↓ history').grid(row=1, column=0, columnspan=3, sticky="w", pady=8)
+        ttk.Label(frame, text="Command").grid(row=2, column=0, sticky="w")
         self.command_entry = ttk.Entry(frame, textvariable=self.command_text)
         self.command_entry.grid(row=2, column=1, sticky="ew", padx=8)
         self.command_entry.bind("<Return>", lambda event: self.send_command())
         self.command_entry.bind("<Up>", lambda event: self.browse_history(-1))
         self.command_entry.bind("<Down>", lambda event: self.browse_history(1))
-        self.send_button = ttk.Button(frame, text="Изпрати", command=self.send_command)
+        self.send_button = ttk.Button(frame, text="Send", command=self.send_command)
         self.send_button.grid(row=2, column=2)
-        self.command_status = tk.StringVar(value="Готов за изпращане")
+        self.command_status = tk.StringVar(value="Ready")
         ttk.Label(frame, textvariable=self.command_status).grid(row=3, column=0, columnspan=3, sticky="w", pady=8)
         self.command_log = ScrolledText(frame, state="disabled", wrap="word")
         self.command_log.grid(row=4, column=0, columnspan=3, sticky="nsew")
@@ -122,9 +122,9 @@ class ServerWindow:
         try:
             name, values = parse_command(text)
             if not endpoint.startswith("tcp://"):
-                raise ValueError("Адресът трябва да започва с tcp://")
+                raise ValueError("Address must start with tcp://")
         except ValueError as error:
-            self.write_command(f"Грешка: {error}")
+            self.write_command(f"Error: {error}")
             return
         self.write_command(f"> {text}  [{endpoint}]")
         self.command_history.append(text)
@@ -133,7 +133,7 @@ class ServerWindow:
         self.command_text.set("")
         self.command_entry.focus_set()
         self.command_busy = True
-        self.command_status.set("Изчакване на отговор…")
+        self.command_status.set("Waiting…")
         self.send_button.configure(state="disabled")
         threading.Thread(target=self.request_command, args=(endpoint, text), daemon=True).start()
 
@@ -145,10 +145,10 @@ class ServerWindow:
             except subprocess.TimeoutExpired:
                 process.kill()
                 process.communicate()
-                raise RuntimeError("Изтече времето за отговор.")
+                raise RuntimeError("Response timed out.")
             self.events.put(("command_result", (process.returncode, output.strip())))
         except Exception as error:
-            self.events.put(("command_result", (1, f"Грешка: {error}")))
+            self.events.put(("command_result", (1, f"Error: {error}")))
 
     def entry(self, frame, row, label, variable):
         ttk.Label(frame, text=label).grid(row=row, column=0, sticky="w")
@@ -166,9 +166,9 @@ class ServerWindow:
                               if path == self.settings.port), "")
                 self.port.set(saved)
                 if not saved:
-                    self.status.set("Избери сериен порт" if ports else "Няма намерени серийни портове")
+                    self.status.set("Select a serial port" if ports else "No serial ports found")
         except Exception as error:
-            messagebox.showerror("Серийни портове", str(error))
+            messagebox.showerror("Serial ports", str(error))
 
     def write(self, text):
         self.log.configure(state="normal")
@@ -182,8 +182,13 @@ class ServerWindow:
         env = dict(os.environ, PYTHONUNBUFFERED="1")
         package_root = str(Path(__file__).resolve().parent.parent)
         env["PYTHONPATH"] = package_root + os.pathsep + env.get("PYTHONPATH", "")
+        if getattr(sys, "frozen", False):
+            worker = "--client" if module == "pykidev.client" else "--server"
+            command = [sys.executable, worker, *arguments]
+        else:
+            command = [sys.executable, "-m", module, *arguments]
         return subprocess.Popen(
-            [sys.executable, "-m", module, *arguments],
+            command,
             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, encoding="utf-8", errors="replace",
             env=dict(env, PYTHONIOENCODING="utf-8"),
@@ -195,21 +200,21 @@ class ServerWindow:
         try:
             port = self.port_paths.get(self.port.get())
             if not port:
-                raise ValueError("Избери сериен порт.")
+                raise ValueError("Select a serial port.")
             baud = int(self.baud.get())
             tcp = int(self.rpc_port.get())
             host = self.host.get().strip()
             if baud <= 0 or not 1 <= tcp <= 65535 or not host or ':' in host or '/' in host:
-                raise ValueError("Провери скоростта, адреса и TCP порта (IPv4 или име).")
+                raise ValueError("Check baud rate, host (IPv4 or hostname), and TCP port.")
             self.endpoint = f"tcp://{'127.0.0.1' if host in ('0.0.0.0', '*') else host}:{tcp}"
             args = ["start", "--port", port, "--baudrate", str(baud), "--bind", f"tcp://{host}:{tcp}"]
             self.process = self.launch(args)
         except Exception as error:
-            messagebox.showerror("Стартиране", str(error))
+            messagebox.showerror("Start", str(error))
             return
         self.ready = self.stopping = False
         self.client_endpoint.set(self.endpoint)
-        self.status.set("Свързване и начален setup…")
+        self.status.set("Starting…")
         self.start_button.configure(state="disabled")
         for widget in self.inputs:
             widget.configure(state="disabled")
@@ -226,7 +231,7 @@ class ServerWindow:
             return
         self.stopping = True
         self.stop_button.configure(state="disabled")
-        self.status.set("Спиране…")
+        self.status.set("Stopping…")
         threading.Thread(target=self.request_stop, daemon=True).start()
 
     def request_stop(self):
@@ -237,7 +242,7 @@ class ServerWindow:
             except subprocess.TimeoutExpired:
                 process.kill()
                 output, _ = process.communicate()
-                raise RuntimeError("Изтече времето за спиране. " + output)
+                raise RuntimeError("Stop timed out. " + output)
             if process.returncode:
                 raise RuntimeError(output.strip())
             self.events.put(("log", output.strip()))
@@ -254,28 +259,28 @@ class ServerWindow:
                 code, output = value
                 self.write_command(output)
                 self.command_busy = False
-                self.command_status.set("Грешка" if code else "Получен отговор")
+                self.command_status.set("Error" if code else "Done")
                 self.send_button.configure(state="normal")
             elif kind == "log":
                 self.write(value)
                 if value.startswith("Serving at "):
                     self.settings = load_settings()
                     self.ready = True
-                    self.status.set("Работи")
+                    self.status.set("Running")
                     self.stop_button.configure(state="normal")
                     if self.closing:
                         self.stop()
             elif kind == "stop_error":
-                self.write("Грешка при спиране: " + value)
+                self.write("Stop failed: " + value)
                 self.stopping = False
                 self.closing = False
-                self.status.set("Спирането не успя — опитай отново")
+                self.status.set("Stop failed. Retry.")
                 self.stop_button.configure(state="normal")
             elif kind == "exit":
                 self.process = None
                 self.ready = self.stopping = False
-                self.status.set(f"Спрян (код {value})")
-                self.write(f"Процесът приключи с код {value}.")
+                self.status.set(f"Stopped (code {value})")
+                self.write(f"Process exited (code {value}).")
                 for widget in self.inputs:
                     widget.configure(state="normal")
                 self.ports.configure(state="readonly")
@@ -283,7 +288,7 @@ class ServerWindow:
                 self.stop_button.configure(state="disabled")
                 if value != 0 and not self.closing:
                     self.port.set("")
-                    messagebox.showerror("Свързването не успя", "Провери съобщенията и избери порт преди следващия опит.")
+                    messagebox.showerror("Connection failed", "Check the log and select a port to retry.")
                 if self.closing:
                     self.root.destroy()
                     return
@@ -297,7 +302,7 @@ class ServerWindow:
             if self.ready:
                 self.stop()
             else:
-                self.status.set("Изчакване на стартирането, след което спиране…")
+                self.status.set("Stopping after startup…")
 
 
 def main():

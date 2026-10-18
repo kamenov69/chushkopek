@@ -2,9 +2,11 @@
 from dataclasses import dataclass
 from pathlib import Path
 import os
+import sys
 import tempfile
 
-SETUP_PATH = Path(__file__).resolve().parent.parent / 'setup.ini'
+SETUP_PATH = ((Path(sys.executable).resolve().parent if getattr(sys, 'frozen', False)
+               else Path(__file__).resolve().parent.parent) / 'setup.ini')
 
 
 @dataclass
