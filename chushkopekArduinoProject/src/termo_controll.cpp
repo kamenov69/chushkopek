@@ -60,7 +60,8 @@ void setup_termo_controll(){
   add_new_global_var("sp1", 10, 0, 370);
   add_new_global_var("kp", Kp, 0.01, 1000);
   add_new_global_var("tau", Kp/Ki, 0.05, 600.0);
-  add_new_global_var("pidm", 0, 0.0, 1.0);
+  // 0 = off, 1 = PID, 2 = on/off control
+  add_new_global_var("pidm", 0, 0.0, 2.0);
   //add_new_global_var("pid0m", 0, 0.0, 1.0);
   //add_new_global_var("pid1m", 0, 0.0, 1.0);
 
@@ -103,15 +104,19 @@ void update_param(void){
     }
 
     if(globals.isUpdated("pidm")){
-      if(globals.get("pidm") == 0) {
+      const int mode = (int)globals.get("pidm");
+      if(mode == 0) {
         PID0.SetMode(MANUAL); 
         globals.set("pwm0", 0);
         PID1.SetMode(MANUAL); 
         globals.set("pwm1", 0);
-      }
-      else{ 
+      } else if(mode == 1) {
         PID0.SetMode(AUTOMATIC);
         PID1.SetMode(AUTOMATIC);
+      } else {
+        // On/off mode: keep the PID controllers inactive.
+        PID0.SetMode(MANUAL);
+        PID1.SetMode(MANUAL);
       }
       globals.clearUpdated("pidm");
     }
@@ -131,10 +136,16 @@ void loop_termo_controll(){
   Input1 = globals.get("t1");
   PID0.Compute();
   PID1.Compute();
-  if(PID0.GetMode() || PID1.GetMode()) {
+
+  const int mode = (int)globals.get("pidm");
+  if(mode == 0) {
+    // Regulation disabled: force both outputs off.
+    globals.set("pwm0", PWM_MIN_VALUE);
+    globals.set("pwm1", PWM_MIN_VALUE);
+  } else if(mode == 1) {
     globals.set("pwm0", Output0 );
     globals.set("pwm1", Output1 );
-  }else{
+  } else { // mode == 2: on/off control
        if( Input0 < Setpoint0) globals.set("pwm0", PWM_MAX_VALUE);
        else globals.set("pwm0", PWM_MIN_VALUE);
        if( Input1 < Setpoint1) globals.set("pwm1", PWM_MAX_VALUE);
@@ -145,7 +156,6 @@ void loop_termo_controll(){
   //  globals.set("pwm1", Output1 );
   // }
 }
-
 
 
 

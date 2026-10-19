@@ -23,6 +23,10 @@ void setup_buzzer(){
                 peep();
                 cmdGetStream()->println(1);
             });
+
+    // Automatic beep after the ADC buffers are filled is enabled by default.
+    // A non-zero value enables it, zero disables it.
+    add_new_global_var("peepm", 1, 0, 1);
 }
 
 
@@ -32,7 +36,7 @@ static int old_redy_flag;
 
 int tmp = globals.get("crdy");
     if (tmp != old_redy_flag){
-        if(tmp == 1){
+        if(tmp == 1 && globals.get("peepm") != 0){
             peep();
         }
         old_redy_flag = tmp;

@@ -10,13 +10,14 @@ Vars globals;
 
 float parse_float(int nargs, char **args){
 //These parameters can also be passed to other functions like normal variables.
-    float ret_value; 
+    float ret_value = 0.0;
   
     if((nargs > 0)){
-      float  tmparg1 = (float)cmdStr2Num(args[0], 10);
+      // Accept decimal values such as 0.0, 0.5 and 1.0.
+      float  tmparg1 = strtof(args[0], nullptr);
       int  tmparg2 = 0;
       if (nargs > 1){ 
-        tmparg2 =  cmdStr2Num(args[1], 10);
+      tmparg2 =  cmdStr2Num(args[1], 10);
       }
       ret_value =  tmparg1*pow(10.0,tmparg2);
     }
@@ -66,5 +67,4 @@ void add_new_global_var(const char * name, VARS_TYPE_ value, VARS_TYPE_ min, VAR
 
 
 void setup_var_list_cmd(){cmdAdd("varlst", _vars_list);}
-
 
