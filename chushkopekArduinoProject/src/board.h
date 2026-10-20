@@ -17,6 +17,21 @@
 #define pwm0_pin  D6
 #define pwm1_pin  D5
 
+// --- Measurement trigger configuration
+// The input must remain at the inactive level for this amount of time before
+// the configured transition is accepted as a new measurement request.
+// This replaces the old implicit value of approximately 1000 loop calls.
+#define BUTTON_STABLE_TIME_MS 1000
+
+// After the trigger transition is detected, the active level must remain
+// present for this additional time before the measurement is started.
+#define BUTTON_ACTIVE_HOLD_TIME_MS 100
+
+// Select the level that starts a measurement when the input transitions to it.
+// LOW  = current behaviour: wait at HIGH, then trigger on HIGH -> LOW.
+// HIGH = reverse behaviour: wait at LOW, then trigger on LOW -> HIGH.
+#define BUTTON_TRIGGER_LEVEL HIGH
+
 
 // --- Operation modes
 #define MIN_MODE 0

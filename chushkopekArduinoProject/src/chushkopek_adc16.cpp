@@ -31,24 +31,82 @@ static const uint8_t muxes[] = {
 };
 
 void _button_task(){
-        static int button_state = 0;
-        if(digitalRead(BUTTON)){
-            button_state++;
-            if( button_state > 1000) button_state = 1000;
-        }else{
-            if(button_state > 990){
-                 mode =1;
-                 buffer0.clear();
-                 buffer1.clear();
-                 globals.set("crdy",0.0);
-                 
-                }
-              button_state = 0;   
-            }
-           
-            
-    
+    // These variables implement a one-shot edge detector.  Once the input has
+    // stayed inactive for the configured time, that qualification is retained
+    // across short active pulses.  This means a short pulse cancels only its
+    // own attempt; the next longer active pulse can be accepted immediately.
+    static bool inactiveTimerRunning = false;
+    static bool inactiveQualified = false;
+    static bool activeHoldPending = false;
+    static uint32_t inactiveSince = 0;
+    static uint32_t activeSince = 0;
+
+    // BUTTON_TRIGGER_LEVEL is configurable in board.h, so the same code
+    // supports both HIGH -> LOW and LOW -> HIGH measurement triggers.
+    const bool buttonIsActive = (digitalRead(BUTTON) == BUTTON_TRIGGER_LEVEL);
+
+    if (!buttonIsActive) {
+        // A short active pulse cancels only the active hold timer.  Keep
+        // inactiveQualified true so another active pulse does not need to
+        // wait for BUTTON_STABLE_TIME_MS again.
+        activeHoldPending = false;
+
+        // Start the inactive-level timer only when the input has not already
+        // been qualified.  After a completed measurement this also rearms the
+        // detector for the next inactive-to-active cycle.
+        if (!inactiveQualified && !inactiveTimerRunning) {
+            inactiveSince = millis();
+            inactiveTimerRunning = true;
+        }
+        return;
     }
+
+    // Detect the transition to the active level only after the input has
+    // remained inactive for BUTTON_STABLE_TIME_MS.  The measurement is not
+    // started yet: the active level must now be held for another interval.
+    if (!inactiveQualified && inactiveTimerRunning) {
+        if ((uint32_t)(millis() - inactiveSince) < BUTTON_STABLE_TIME_MS) {
+            // The inactive level was too short, so this is not a valid cycle.
+            inactiveTimerRunning = false;
+            return;
+        }
+
+        // Remember that the inactive level has already been valid long enough.
+        // This qualification survives a short active pulse below.
+        inactiveTimerRunning = false;
+        inactiveQualified = true;
+        activeSince = millis();
+        activeHoldPending = true;
+        return;
+    }
+
+    // A later active pulse starts a fresh active hold, while retaining the
+    // previously acquired inactive qualification.
+    if (inactiveQualified && !activeHoldPending) {
+        activeSince = millis();
+        activeHoldPending = true;
+        return;
+    }
+
+    // Start the measurement only after the active level has been held for the
+    // configured pause.  Returning inactive before this point cancels it.
+    if (inactiveQualified && activeHoldPending &&
+        (uint32_t)(millis() - activeSince) >= BUTTON_ACTIVE_HOLD_TIME_MS) {
+        // Keep the existing measurement-start actions: stop the ready state
+        // and clear both non-cyclic measurement buffers.
+        mode = 1;
+        buffer0.clear();
+        buffer1.clear();
+        globals.set("crdy", 0.0);
+        activeHoldPending = false;
+        // Require a new inactive period after a successful measurement before
+        // accepting another active transition.
+        inactiveQualified = false;
+    }
+
+    // If the active level drops before the hold time expires, the inactive
+    // branch above cancels only activeHoldPending and preserves the qualification.
+}
 
 
 
