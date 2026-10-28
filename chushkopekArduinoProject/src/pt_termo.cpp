@@ -5,13 +5,13 @@
 #include "Cmd.h"
 #include "board.h"
 
+const float R_REF = REFF_RESISDTOR_Ohms; 
 
 #ifdef TS_PT_50
 // --- Pt50 ---
 const float R0 = 42.5;               // Съпротивление при 0°C (Ома)
 const float A = 3.9083e-3;           // Коефициент A
 const float B = -5.775e-7;           // Коефициент B
-const float R_REF = 613.0;           // Резистор в делителя (Ома)
 const float V_CC_MV = 3300.0;        // Захранващо напрежение в миливолти (mV)
 #endif
 
@@ -19,7 +19,6 @@ const float V_CC_MV = 3300.0;        // Захранващо напрежени�
 const float R0 = 100.0;               // Съпротивление при 0°C (Ома)
 const float A = 3.9083e-3;           // Коефициент A
 const float B = -5.775e-7;           // Коефициент B
-const float R_REF = 613.0;           // Резистор в делителя (Ома)
 const float V_CC_MV = 3300.0;        // Захранващо напрежение в миливолти (mV)
 #endif
 

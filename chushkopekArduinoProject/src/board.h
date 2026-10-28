@@ -51,15 +51,25 @@ void loop_board();
 // Termo sensor 
 // --- PT50 or PT100
 //#define TS_PT_50
+//#define REFF_RESISDTOR_Ohms  613.0
 #define TS_PT_100  
+#define REFF_RESISDTOR_Ohms 1003.0
 
-// --- PWM allowed max value 0-1023
-#define PWM_MAX_VALUE 100
+
+
+// --- Maximum allowed PWM duty (10-bit hardware range: 0-1023).
+// Shared by manual PWM commands, PID and on/off control.
+// 100 = ~9.8%, 512 = ~50%, 1023 = 100% of the hardware range.
+#define PWM_MAX_VALUE 1023
 #define PWM_MIN_VALUE 0 
 
+#if PWM_MAX_VALUE <= PWM_MIN_VALUE || PWM_MAX_VALUE > 1023
+#error "PWM_MAX_VALUE must be between 1 and 1023"
+#endif
+
 // Very conservativ settings
-#define  PID_KP_INIT  1.96                 // Kp = 0.2 Kcritical =  1.96
-#define  PID_KI_INIT  (PID_KP_INIT) / 7.5  // ti = Tu/2 = 7.5     
+#define  PID_KP_INIT     50                  // 1.96 Kp = 0.2 Kcritical =  1.96
+#define  PID_KI_INIT  (PID_KP_INIT) / 15  // ti = Tu/2 = 7.5     
                                            // Ki = Kp/ti = 0.26 
 #define  PID_KD_INIT  (PID_KP_INIT * PID_KI_INIT) * 2/3  // td = Tu/3 = 2/3*ti  
 
