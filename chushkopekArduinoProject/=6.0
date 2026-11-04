@@ -1,0 +1,14 @@
+Collecting pyinstaller
+  Using cached pyinstaller-6.22.3-py3-none-manylinux2014_x86_64.whl.metadata (8.5 kB)
+Collecting altgraph (from pyinstaller)
+  Using cached altgraph-0.17.5-py2.py3-none-any.whl.metadata (7.5 kB)
+Requirement already satisfied: packaging>=22.0 in /home/kamen/anaconda3/envs/myenv/lib/python3.13/site-packages (from pyinstaller) (25.0)
+Collecting pyinstaller-hooks-contrib>=2026.7 (from pyinstaller)
+  Using cached pyinstaller_hooks_contrib-2026.9-py3-none-any.whl.metadata (16 kB)
+Requirement already satisfied: setuptools>=42.0.0 in /home/kamen/anaconda3/envs/myenv/lib/python3.13/site-packages (from pyinstaller) (80.9.0)
+Using cached pyinstaller-6.22.3-py3-none-manylinux2014_x86_64.whl (764 kB)
+Using cached pyinstaller_hooks_contrib-2026.9-py3-none-any.whl (462 kB)
+Using cached altgraph-0.17.5-py2.py3-none-any.whl (21 kB)
+Installing collected packages: altgraph, pyinstaller-hooks-contrib, pyinstaller
+
+Successfully installed altgraph-0.17.5 pyinstaller-6.22.3 pyinstaller-hooks-contrib-2026.9

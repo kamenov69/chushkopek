@@ -32,6 +32,16 @@
 // HIGH = reverse behaviour: wait at LOW, then trigger on LOW -> HIGH.
 #define BUTTON_TRIGGER_LEVEL HIGH
 
+// Number of samples captured for each optical measurement channel.
+// At the current sampling rate, 64 samples represent approximately 8 seconds.
+// Increase this value when a longer signal must be captured. The monitor can
+// display any buffer length returned by the server.
+#define MEASUREMENT_BUFFER_SIZE 64
+
+#if MEASUREMENT_BUFFER_SIZE < 1
+#error "MEASUREMENT_BUFFER_SIZE must be positive"
+#endif
+
 
 // --- Operation modes
 #define MIN_MODE 0

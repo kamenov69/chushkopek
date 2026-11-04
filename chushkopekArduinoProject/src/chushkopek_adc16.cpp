@@ -6,8 +6,8 @@
 #include "globalVars.h" 
 //#include "buzzer.h"
 
-Buffer<float, 64> buffer0(false);// 8 times in second x 8 seconds -  not cyclick   
-Buffer<float, 64> buffer1(false);// 
+Buffer<float, MEASUREMENT_BUFFER_SIZE> buffer0(false);// not cyclic
+Buffer<float, MEASUREMENT_BUFFER_SIZE> buffer1(false);// not cyclic
 Buffer<float, 8> buffer2(true); //  1 second cyclick 
 Buffer<float, 8> buffer3(true); //  1 second cyclic  
 

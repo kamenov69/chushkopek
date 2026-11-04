@@ -1,0 +1,4 @@
+zerorpc>=0.6.3
+msgpack>=1.0.0
+pyzmq>=25.0.0
+pyinstaller>=6.0
