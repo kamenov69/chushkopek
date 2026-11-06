@@ -78,9 +78,17 @@ void loop_board();
 #endif
 
 // Very conservativ settings
-#define  PID_KP_INIT     50                  // 1.96 Kp = 0.2 Kcritical =  1.96
-#define  PID_KI_INIT  (PID_KP_INIT) / 15  // ti = Tu/2 = 7.5     
+//#define  PID_KP_INIT     50                  // 1.96 Kp = 0.2 Kcritical =  1.96
+//#define  PID_KI_INIT  (PID_KP_INIT) / 15  // ti = Tu/2 = 7.5     
+//                                           // Ki = Kp/ti = 0.26 
+//#define  PID_KD_INIT  (PID_KP_INIT * PID_KI_INIT) * 2/3  // td = Tu/3 = 2/3*ti  
+
+
+#define  PID_KP_INIT     122.7                  // 1.96 Kp = 0.2 Kcritical =  1.96
+#define  PID_KI_INIT  (PID_KP_INIT) / 42.85  // ti = Tu/2 = 7.5     
                                            // Ki = Kp/ti = 0.26 
-#define  PID_KD_INIT  (PID_KP_INIT * PID_KI_INIT) * 2/3  // td = Tu/3 = 2/3*ti  
+#define  PID_KD_INIT  (PID_KP_INIT * PID_KI_INIT) * 1/3  // td = Tu/3 = 2/3*ti  
+
+
 
 #endif

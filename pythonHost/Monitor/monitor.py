@@ -386,7 +386,9 @@ class TemperatureMonitor:
         last_time, _ = self.history[-1]
         span = max(1.0, last_time - first_time)
 
-        colors = {"t0": "#e67e22", "t1": "#3498db", "sp0": "#f5b041", "sp1": "#85c1e9"}
+        # Draw setpoints first so the live temperature traces remain visible
+        # when the measured temperature is close to its target value.
+        colors = {"sp0": "#f5b041", "sp1": "#85c1e9", "t0": "#e67e22", "t1": "#3498db"}
         for name, color in colors.items():
             points = []
             for item_time, item in self.history:
@@ -396,7 +398,10 @@ class TemperatureMonitor:
                 y = bottom - (item[name] - lo) / (hi - lo) * (bottom - top)
                 points.extend((x, y))
             if len(points) >= 4:
-                canvas.create_line(*points, fill=color, width=2, smooth=True)
+                if name.startswith("sp"):
+                    canvas.create_line(*points, fill=color, width=2, dash=(8, 4), smooth=True)
+                else:
+                    canvas.create_line(*points, fill=color, width=3, smooth=True)
 
         canvas.create_text(left, height - 15, text=f"{span:.0f} s", fill="#c6d0da",
                            anchor="w", font=("TkDefaultFont", 11, "bold"))
